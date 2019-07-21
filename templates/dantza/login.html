@@ -1,0 +1,33 @@
+{% extends "dantza/base.html" %}
+
+{% block title %}Login{% endblock title %}
+
+{% block edukia %}
+<div style="height: calc(100vh - 56px);">
+	<div class="card" style="position:relative; width: 18rem; top: 50%; transform: translateY(-50%); margin:auto;">
+		<div class="card-header">
+			<b>Login egin</b>
+		</div>
+		<div class="card-body">
+			{% if log_err %}
+				<div class="alert alert-danger" role="alert">
+				  {{ log_err }}
+				</div>
+			{% endif %}
+			<form method="POST">
+				{% csrf_token %}
+				<div class="form-group">
+					<label for="username">Erabiltzailea</label>
+					<input type="text" class="form-control" id="username" name="username" autofocus/>
+				</div>
+				<div class="form-group">
+					<label for="password">Pasahitza</label>
+					<input type="password" class="form-control" id="password" name="password"/>
+				</div>
+				<button type="submit" class="btn btn-success btn-block">Bidali</button>
+			</form>
+		</div>
+	</div>
+</div>
+
+{% endblock edukia %}

@@ -1,0 +1,128 @@
+{% extends "dantza/base.html" %}
+
+{% block title %}Arropa{% endblock title %}
+
+{% block edukia %}
+<div class="container">
+	<div class="clearfix">
+		<button type="button" style="margin-top: 15px;" class="btn btn-primary float-right" data-toggle="modal" data-target="#exampleModal">
+		  Gehitu arropa
+		</button>
+	</div>
+	<div class="card" style="margin-top: 15px; margin-bottom: 15px;">
+		<div class="card-header">Arropa zerrenda</div>
+		<div class="card-body">
+	{% if a_list %}
+	
+		<div class="table-responsive">
+			<table class="table table-hover table-striped">
+			  <thead>
+				<tr>
+				  <th scope="col">Mota</th>
+				  <th scope="col">Kopurua</th>
+				  <th scope="col">Mailegatutakoak</th>
+				  <th scope="col">Armairua</th>
+					<th>Informazio gehio</th>
+				</tr>
+			  </thead>
+			  <tbody>
+			{% for a in a_list %}
+				  <tr>
+					  <th scope="row" style="vertical-align:middle;">{{ a | safe }}</th>
+					  <td style="vertical-align:middle;">{{ a.arropa_kop | safe }}</td>
+					  <td style="vertical-align:middle;">{{ a.mailegatu_kop | safe }}</td>
+					  {% if a.armairua_du %}
+					  	<td style="vertical-align:middle;"><a href="/inbentarioa/{{ a.armairu_id.0 }}/">{{ a.armairu_id.1 }}</a></td>
+					  {% else %}
+					  	<td style="vertical-align:middle;">Oraindik ez du armairurik</td>
+					  {% endif %}
+					  <td style="vertical-align:middle;">
+						  <a class="btn btn-primary" href="/arropa/{{ a.id }}/">Kontsultatu</a>
+					  </td>
+
+					  
+				  </tr>
+			{% endfor %}
+				</tbody>
+			</table>
+			</div>
+
+			<nav aria-label="paginator">
+				<ul class="pagination justify-content-center">
+				{% if a_list.has_previous %}
+					<li class="page-item"><a class="page-link" href="?page={{ a_list.previous_page_number }}">Aurrekoa</a></li>
+				{% else %}
+					<li class="page-item disabled"><a class="page-link" href="#">Aurrekoa</a></li>
+				{% endif %}
+				<li class="page-item active"><div class="page-link">{{ a_list.number }}</div></li>
+				{% if a_list.has_next %}
+					<li class="page-item"><a class="page-link" href="?page={{ a_list.next_page_number }}">Hurrengoa</a></li>
+				{% else %}
+					<li class="page-item disabled"><a class="page-link" href="#">Hurrengoa</a></li>
+				{% endif %}
+				</ul>
+				</nav>
+
+	{% else %}
+		Oraindik ez dago arroparik<br/>
+	{% endif %}
+		</div>
+	</div>
+	<div>
+		
+		<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Gehitu arropa</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+				</button>
+			  </div>
+			  <div class="modal-body">
+			  	  <form method="POST">
+					  {% csrf_token %}
+					  <div class="form-group">
+					  	<label for="kop">Kopurua</label>
+					  	<input type="number" id="kop" name="kop" value="1" class="form-control"/>
+					  </div>
+					  <div class="form-group">
+						  <label for="type">Mota</label>
+						  <select id="type" name="type" class="form-control" onchange="m()">
+							  <option value="-1" selected>Mota ez dago zerrendan</option>
+							  {% for a in a_osoa %}
+							  	<option value="{{ a.pk }}">{{ a.mota | safe }}</option>
+							  {% endfor %}
+						  </select>
+						  <small>Mota ez badago, gehitu idatziz beheko hutsunean.</small>
+					  </div>
+					  <div class="form-group" id="mota_berria">
+					  	<label for="newType">Mota berria</label>
+					  	<input type="text" id="newType" name="newType" class="form-control"/>
+					  </div>
+					  <script>
+						  function m(){
+						  	  if(document.getElementById('type').value != -1){
+								document.getElementById('mota_berria').hidden = true;
+							  }else{
+								document.getElementById('mota_berria').hidden = false;
+							  }
+						  }
+						  m();
+					  </script>
+					  <div class="form-group">
+					  	<label for="desk">Deskribapena</label>
+					  	<input type="text" id="desk" name="desk" class="form-control"/>
+					  </div>
+					  <div class="clearfix">
+					  <input type="submit" class="btn btn-success float-right" value="Gehitu"/>
+					</div>
+				  </form>
+			  </div>
+			</div>
+		  </div>
+		</div>
+		
+	</div>
+</div>
+{% endblock edukia %}

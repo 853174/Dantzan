@@ -1,0 +1,107 @@
+{% extends "dantza/base.html" %}
+
+{% block title %}Materiala{% endblock title %}
+
+{% block edukia %}
+<div class="container">
+	<div class="clearfix">
+		<button style="margin-top: 15px;" type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#exampleModal">
+		  Gehitu tresnak
+		</button>
+	</div>
+	<div class="card" style="margin-top: 15px; margin-bottom: 15px;">
+		<div class="card-header">Material zerrenda</div>
+		<div class="card-body">
+	{% if m_list %}
+	
+		<div class="table-responsive">
+			<table class="table table-hover table-striped">
+			  <thead>
+				<tr>
+				  <th scope="col">Materiala</th>
+				  <th scope="col">Tresna kopurua</th>
+				  <th scope="col">Mailegatutakoak</th>
+				  <th>Armairua</th>
+					<th scope="col">Informazio gehio</th>
+				</tr>
+			  </thead>
+			  <tbody>
+			{% for m in m_list %}
+				  <tr>
+					  <th scope="row" style="vertical-align:middle;">{{ m.mota }}</th>
+					  <td style="vertical-align:middle;">{{ m.tresna_kop }}</td>
+					  <td style="vertical-align:middle;">{{ m.mailegatu_kop }}</td>
+					  {% if m.armairua_du %}
+					  	<td style="vertical-align:middle;"><a href="/inbentarioa/{{ m.armairu_id.0 }}/">{{ m.armairu_id.1 }}</a></td>
+					  {% else %}
+					  	<td style="vertical-align:middle;">Oraindik ez du armairurik</td>
+					  {% endif %}
+					  <td style="vertical-align:middle;">
+						  <a class="btn btn-primary" href="/materiala/{{ m.id }}/">Kontsultatu</a>
+					  </td>
+				  </tr>
+			{% endfor %}
+				</tbody>
+			</table>
+			</div>
+		
+	
+	{% else %}
+		Oraindik ez dago materialik<br/>
+	{% endif %}
+		</div>
+	</div>
+	<div>
+		
+		
+		<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Gehitu tresnak</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+				</button>
+			  </div>
+			  <div class="modal-body">
+			  	  <form method="POST">
+					  {% csrf_token %}
+					  <div class="form-group">
+					  	<label for="kop">Kopurua</label>
+					  	<input type="number" id="kop" name="kop" value="1" class="form-control"/>
+					  </div>
+					  <div class="form-group">
+						  <label for="type">Mota</label>
+						  <select id="type" name="type" class="form-control" onchange="m()">
+							  <option value="-1" selected>Mota ez dago zerrendan</option>
+							  {% for mat in m_list %}
+							  <option value="{{ mat.pk }}">{{ mat.mota }}</option>
+							  {% endfor %}
+						  </select>
+						  <small>Mota ez badago, gehitu idatziz beheko hutsunean.</small>
+					  </div>
+					  <div class="form-group" id="mota_berria">
+					  	<label for="newType">Mota berria</label>
+					  	<input type="text" id="newType" name="newType" class="form-control"/>
+					  </div>
+					   <script>
+						  function m(){
+						  	  if(document.getElementById('type').value != -1){
+								document.getElementById('mota_berria').hidden = true;
+							  }else{
+								document.getElementById('mota_berria').hidden = false;
+							  }
+						  }
+						  m();
+					  </script>
+					  <div class="clearfix">
+					  <input type="submit" class="btn btn-success float-right" value="Gehitu"/>
+					</div>
+				  </form>
+			  </div>
+			</div>
+		  </div>
+		</div>
+	</div>
+</div>
+{% endblock edukia %}

@@ -1,0 +1,165 @@
+{% extends "dantza/base.html" %}
+
+{% block title %}{{ armairua.zbk }} armairua{% endblock title %}
+
+{% block edukia %}
+
+{% load auth_extras %}
+
+<div class="container">
+
+<a class="btn btn-primary" href="/inbentarioa" style="margin-top:15px">Atzera</a>
+<div class="card" style="margin-top:15px">
+		<div class="card-header"><i>{{ armairua.zbk }}</i> armairuaren edukia</div>
+		<div class="card-body">
+			
+	{% if armairua.materiala.all|length != 0 or armairua.arropa.all|length != 0 %}
+	<div class="table-responsive">
+		<table class="table table-hover table-striped">
+		  <thead>
+			<tr>
+			  <th scope="col">Mota</th>
+			  <th scope="col">Kopurua</th>
+				<th scope="col">Mailegatutakoak</th>
+				{% if request.user.is_superuser or request.user|has_group:"material_arduradunak" or request.user|has_group:"arropa_arduradunak" %}
+				<th></th>
+				{% endif %}
+			</tr>
+		  </thead>
+		  <tbody>
+		{% for m in armairua.materiala.all %}
+			  <tr>
+				  <th scope="row" style="vertical-align:middle;">{{ m.mota | safe }}</th>
+
+				  <td style="vertical-align:middle;">
+				  	{% if request.user|has_group:"material_arduradunak" %}
+				  		<a href="/materiala/{{ m.pk }}">{{ m.tresna_kop }}</a>
+				  	{% else %}
+				  		{{ m.tresna_kop }}
+				  	{% endif %}
+				  </td>
+				  <td style="vertical-align:middle;">
+				  	{{ m.mailegatu_kop | safe }}
+				  </td>
+				  
+				  {% if request.user.is_superuser or request.user|has_group:"material_arduradunak" %}
+				  <td style="vertical-align:middle;">
+				  	<a href="?ateraM&id={{ m.pk }}" class="btn btn-danger">Atera</a>
+				  </td>
+				  {% endif %}
+				  
+			  </tr>
+		{% endfor %}
+		{% for m in armairua.arropa.all %}
+			  <tr>
+				  <th scope="row" style="vertical-align:middle;">{{ m.mota | safe }}</th>
+
+				  <td style="vertical-align:middle;">
+				  	{% if request.user|has_group:"arropa_arduradunak" %}
+				  		<a href="/arropa/{{ m.pk }}">{{ m.arropa_kop | safe }}</a>
+				  	{% else %}
+				  		{{ m.arropa_kop | safe }}
+				  	{% endif %}
+				  </td>
+				  <td style="vertical-align:middle;">
+				  	{{ m.mailegatu_kop | safe }}
+				  </td>
+				  {% if request.user.is_superuser or request.user|has_group:"arropa_arduradunak" %}
+				  <td style="vertical-align:middle;">
+				  	<a href="?ateraA&id={{ m.pk }}" class="btn btn-danger">Atera</a>
+				  </td>
+				  {% endif %}
+			  </tr>
+		{% endfor %}
+			</tbody>
+</table>
+			</div>
+	{% else %}
+		Armairu honetan ez dago edukirik.<br/>
+	{% endif %}
+		</div>
+</div>
+
+{% if request.user.is_superuser or request.user|has_group:"material_arduradunak" or request.user|has_group:"arropa_arduradunak" %}
+
+	<div class="row">
+		<div class="col-md-6" style="margin-top:15px">
+			<div class="card">
+				<div class="card-header">
+					Gorde gabeko arropa
+				</div>
+				<div class="card-body">
+					{% if gordetzeke_arropa %}
+						<div class="table-responsive">
+							<table class="table table-hover table-striped">
+							  	<thead>
+									<tr>
+								  		<th scope="col">Mota</th>
+								  		<th scope="col">Kopurua</th>
+								  		<th scope="col">Mailegatutakoak</th>
+								  		<th scope="col"></th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for a in gordetzeke_arropa %}
+										<tr>
+										  <th scope="row" style="vertical-align:middle;">{{ a.mota | safe }}</th>
+										  <td style="vertical-align:middle;">{{ a.arropa_kop | safe }}</td>
+										  <td style="vertical-align:middle;">{{ a.mailegatu_kop | safe }}</td>
+										  <td style="vertical-align:middle;">
+										  	<a href="?gordeA&id={{ a.pk }}" class="btn btn-primary">Hemen gorde</a>
+										  </td>
+									 	</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+					{% else %}
+						Ez dago gordetzeko arroparik.
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	
+		<div class="col-md-6" style="margin-top:15px">
+			<div class="card">
+				<div class="card-header">
+					Gorde gabeko materiala
+				</div>
+				<div class="card-body">
+					{% if gordetzeke_materiala %}
+						<div class="table-responsive">
+							<table class="table table-hover table-striped">
+							  	<thead>
+									<tr>
+								  		<th scope="col">Mota</th>
+								  		<th scope="col">Kopurua</th>
+								  		<th scope="col">Mailegatutakoak</th>
+								  		<th scope="col"></th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for m in gordetzeke_materiala %}
+										<tr>
+										  <th scope="row" style="vertical-align:middle;">{{ m.mota | safe }}</th>
+										  <td style="vertical-align:middle;">{{ m.tresna_kop | safe }}</td>
+										  <td style="vertical-align:middle;">{{ m.mailegatu_kop | safe }}</td>
+										  <td style="vertical-align:middle;">
+										  	<a href="?gordeM&id={{ m.pk }}" class="btn btn-primary">Hemen gorde</a>
+										  </td>
+									 	</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+					{% else %}
+						Ez dago gordetzeko materialik.
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endif %}
+</div>
+
+{% endblock edukia %}

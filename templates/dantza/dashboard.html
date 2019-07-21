@@ -1,0 +1,102 @@
+{% extends "dantza/base.html" %}
+
+{% block title %}Kudeaketa{% endblock title %}
+
+{% block edukia %}
+<div class="container">
+<!-- Dantzari guztien zerrenda, bakarrik administratzaileak ikusiko du -->
+	<div class="clearfix">
+		<button style="margin-top: 15px;" type="button" class="btn btn-dark float-right" data-toggle="modal" data-target="#mezua">
+		  Mezua bidali
+		</button>
+	</div>
+
+	{% if request.user.is_superuser %}
+	<div class="card" style="margin-top:15px">
+		<div class="card-header">Dantzariak</div>
+		<div class="card-body">
+	{% if d_list %}
+	<div class="table-responsive">
+		<table class="table table-hover table-striped">
+		  <thead>
+			<tr>
+								<th scope="col"></th>
+			  <th scope="col">Izena</th>
+			  <th scope="col">Abizenak</th>
+			  <th scope="col">Adina</th>
+			  <th scope="col">Korreoa</th>
+				<th scope="col">Telefonoa(k)</th>
+				<th scope="col">Ardura</th>
+
+			</tr>
+		  </thead>
+		  <tbody>
+		{% for d in d_list %}
+			  <tr> 
+				  <td style="vertical-align:middle;"><a href="/dantzari/{{ d.pk }}/" class="btn btn-primary">Editatu</a></td>
+				  <th scope="row" style="vertical-align:middle;">{{ d.izena }}</th>
+				  <td style="vertical-align:middle;">{{ d.abizenak }}</td>
+				  <td style="vertical-align:middle;">{{ d.adina }}</td>
+				  <td style="vertical-align:middle;"><a href="mailto:{{ d.email }}">{{ d.email }}</a></td>
+				  <td style="vertical-align:middle;">{{ d.telefonoak }}</td>
+				  <td>
+					  {% if not d.is_materialArduraduna and not d.is_arropaArduraduna %}
+					  <div class="btn btn-outline-success">Dantzaria</div>
+					  {% endif %}
+					  {% if d.is_materialArduraduna %}
+					  <div class="btn btn-outline-danger">Material arduraduna</div>
+					  {% endif %}
+					  {% if d.is_arropaArduraduna %}
+					  <div class="btn btn-outline-secondary">Arropa arduraduna</div>
+					  {% endif %}
+					  
+				  </td>
+			  </tr>
+		{% endfor %}
+			</tbody>
+</table>
+			</div>
+	{% else %}
+		Oraindik ez dago dantzaririk<br/>
+			<small>Dantzari berriak sortzeko, saioa itxi eta erregistratu</small>
+	{% endif %}
+		</div>
+</div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="mezua" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+	<div class="modal-content">
+	  <div class="modal-header">
+		<h5 class="modal-title" id="exampleModalLabel">Mezua idatzi</h5>
+		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		  <span aria-hidden="true">&times;</span>
+		</button>
+	  </div>
+	  <div class="modal-body">
+	  	  <form method="POST">
+			  {% csrf_token %}
+			  <div class="form-group">
+			  	<label for="r">Hartzailea</label>
+			  	<select name="r" class="form-control">
+			  		{% for h in h_list %}
+			  			<option value="{{ h.0 }}">{{ h.1 }}</option>
+					{% endfor %}
+			  	</select>
+			  </div>
+			  <div class="form-group">
+			  	<label for="m">Mezua</label>
+			  	<input type="text" id="m" name="m" class="form-control"/>
+			  </div>
+			  <div class="clearfix">
+			  <input type="submit" class="btn btn-success float-right" value="Gehitu"/>
+			</div>
+		  </form>
+	  </div>
+	</div>
+  </div>
+</div>
+
+{% endif %}
+{% endblock edukia %}

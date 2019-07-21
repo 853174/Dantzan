@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>{% block title %}{% endblock title %}</title>
+  </head>
+  <body>
+
+  		<!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		  <a class="navbar-brand" href="/">
+			  {% load static %}
+			  <img src="{% static "logo.png" %}" width="40" height="40" alt="[logo]">
+			  Tafallako DT</a>
+		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		  </button>
+		  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+			<div class="navbar-nav">
+				
+			  <a class="nav-item nav-link" href="/">Hasiera <span class="sr-only">(current)</span></a>
+				{% if request.user.is_authenticated %}
+					{% if request.user.is_superuser %}
+						<a class="nav-item nav-link" href="/admin" target="_blank">Admin gunea</a>
+						<a class="nav-item nav-link" href="/dashboard">Kudeaketa</a>
+					{% else %}
+				
+						{% load auth_extras %}
+						<a class="nav-item nav-link" href="/profile">Profila</a>
+					{% endif %}
+					<a class="nav-item nav-link" href="/inbentarioa">Inbentarioa</a>
+					<a class="nav-item nav-link" href="/ekitaldiak">Ekitaldiak</a>
+					<a class="nav-item nav-link" href="/dantzak">Dantzak</a>
+					{% if request.user.is_superuser or request.user|has_group:"material_arduradunak" or request.user|has_group:"arropa_arduradunak" %}
+						<a class="nav-item nav-link" href="/maileguak">Maileguak</a>
+					{% endif %}
+				
+					{% if request.user|has_group:"material_arduradunak" %}
+						<a class="nav-item nav-link" href="/materiala">Materiala</a>
+					{% endif %}
+					{% if request.user|has_group:"arropa_arduradunak" %}
+						<a class="nav-item nav-link" href="/arropa">Arropa</a>
+					{% endif %}
+					<a class="nav-item nav-link" href="/logout">Irten</a>
+				{% else %}
+			  		<a class="nav-item nav-link" href="/signup">Erregistratu</a>
+			  		<a class="nav-item nav-link" href="/login">Login egin</a>
+				{% endif %}
+			  <!-- <a class="nav-item nav-link disabled" href="#" tabindex="-1" aria-disabled="true">...</a> -->
+			</div>
+		  </div>
+		</nav>
+	  <div class="container-fluid">
+	  	<div class="container">
+		  	{% if err %}
+				<div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top:15px">
+				  {{ err | safe }}
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				    <span aria-hidden="true">&times;</span>
+				  </button>
+				</div>
+			{% endif %}
+
+			{% if success %}
+				<div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top:15px">
+				  {{ success | safe}}
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				    <span aria-hidden="true">&times;</span>
+				  </button>
+				</div>
+			{% endif %}
+		</div>
+
+    {% block edukia%}
+	  
+	{% endblock edukia %}
+	  </div>
+  </body>
+</html>

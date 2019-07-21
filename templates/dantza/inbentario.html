@@ -1,0 +1,164 @@
+{% extends "dantza/base.html" %}
+
+{% block title %}Inbentarioa{% endblock title %}
+
+{% block edukia %}
+<div class="container">
+
+{% load auth_extras %}
+
+<div class="clearfix">
+	<button style="margin-top: 15px;" type="button" class="btn btn-warning float-left" data-toggle="modal" data-target="#mezua" data-whatever="AA">
+	  Arropa arduradunari mezua bidali
+	</button>
+	<button style="margin-top: 15px;" type="button" class="btn btn-danger float-right" data-toggle="modal" data-target="#mezua" data-whatever="MA">
+	  Material arduradunari mezua bidali
+	</button>
+</div>
+
+	<div class="card" style="margin-top:15px">
+		<a data-toggle="collapse" href="#bilatzailea" style="text-decoration: none; color:#212529" role="button" aria-expanded="false" aria-controls="collapseExample">
+			<div class="card-header ">
+				{% load static %}
+			 
+			 <div class="clearfix">
+			 	Bilatu armairuetan
+			 	<img src="{% static "arrow-down.png" %}" width="22" height="22" alt=">" class="float-right">
+			 </div>
+			</div>
+		</a>
+		<div class="card-body collapse" id="bilatzailea">
+			<form method="POST">
+				{% csrf_token %}
+				<div class="form-group">
+					<label for="bilaketa">Hautatu zerrendatik</label>
+					<select name="bilaketa" class="form-control">
+						{% for arr in arropa_list %}
+							<option value="A{{ arr.pk }}">{{ arr }}</option>
+						{% endfor %}
+						{% for mat in material_list %}
+							<option value="M{{ mat.pk }}">{{ mat }}</option>
+						{% endfor %}
+					</select>
+				</div>
+				<div class="clearfix">
+					<input type="submit" class="btn btn-success float-right" value="Bilatu"/>
+				</div>
+			</form>
+
+		</div>
+	</div>
+
+{% if request.user.is_superuser or request.user|has_group:"material_arduradunak" or request.user|has_group:"arropa_arduradunak" %}
+
+	<div class="clearfix">
+		<button type="button" class="btn btn-primary float-right" style="margin-top:15px" data-toggle="modal" data-target="#exampleModal">
+  Armairua gehitu
+</button>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Armairuaren informazioa</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" style="margin-top:15px;" class="">
+		{% csrf_token %}
+		<div class="form-group">
+			<label for="zbk">Armairuaren identifikadorea</label>
+			<input type="text" name="zbk" class="form-control" required="required"/>
+		</div>
+		<div class="form-group">
+			<label for="zehaztapenak">Zehaztapenak</label>
+			<input type="text" name="zehaztapenak" class="form-control"/>
+		</div>
+		<div class="clearfix">
+		<input type="submit" class="btn btn-primary float-right" value="Armairua gehitu"></div>
+	</form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+
+<div class="card" style="margin-top:15px">
+		<div class="card-header">Armairuak</div>
+		<div class="card-body">
+	{% if armairuak %}
+	<div class="table-responsive">
+		<table class="table table-hover table-striped">
+		  <thead>
+			<tr>
+			  <th scope="col">Identifikadorea</th>
+			  <th scope="col">Zehaztapenak</th>
+				<th scope="col">Informazio gehio</th>
+
+			</tr>
+		  </thead>
+		  <tbody>
+		{% for ar in armairuak %}
+			  <tr>
+				  <th scope="row" style="vertical-align:middle;">{{ ar.zbk }}</th>
+
+				  <td style="vertical-align:middle;">{{ ar.zehaztapenak }}</td>
+				  <td style="vertical-align:middle;">
+				  	<a href="/inbentarioa/{{ ar.pk }}" class="btn btn-primary">Kontsultatu</a>
+				  </td>
+				  
+			  </tr>
+		{% endfor %}
+			</tbody>
+</table>
+			</div>
+	{% else %}
+		Oraindik ez dago armairurik.<br/>
+	{% endif %}
+		</div>
+</div>
+</div>
+
+
+<div class="modal fade" id="mezua" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Mezua idatzi</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+				</button>
+			  </div>
+			  <div class="modal-body">
+			  	  <form method="POST">
+					  {% csrf_token %}
+					  <input type="hidden" id="r" name="r" value=""/>
+					  <div class="form-group">
+					  	<label for="m">Mezua</label>
+					  	<input type="text" id="m" name="m" class="form-control"/>
+					  </div>
+					  <div class="clearfix">
+					  <input type="submit" class="btn btn-success float-right" value="Gehitu"/>
+					</div>
+				  </form>
+			  </div>
+			</div>
+		  </div>
+		</div>
+
+		<script>
+			$('#mezua').on('show.bs.modal', function (event) {
+			  var button = $(event.relatedTarget) // Button that triggered the modal
+			  var recipient = button.data('whatever') // Extract info from data-* attributes
+			  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+			  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+			  $('#r').val(recipient)
+			})
+		</script>
+
+{% endblock edukia %}

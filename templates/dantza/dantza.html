@@ -1,0 +1,102 @@
+{% extends "dantza/base.html" %}
+
+{% block title %}{{ dantza.izena }}{% endblock title %}
+
+{% block edukia %}
+{% load auth_extras %}
+{% load static %}
+
+<div class="container">
+
+	<h3 style="margin-top: 15px;">{{ dantza.izena }}</h3>
+	<hr>
+
+	
+	<div class="clearfix">
+		<a href="/dantzak" style="margin-top: 15px;" class="btn btn-primary float-left">
+		  Atzera
+		</a>
+		{% if request.user.is_superuser %}
+		<button type="button" style="margin-top: 15px;" class="btn btn-primary float-right" data-toggle="modal" data-target="#gehituDantza">
+		  Gehitu dokumentuak
+		</button>
+		{% endif %}
+	</div>
+	
+
+	<div class="card" style="margin-top:15px">
+		<div class="card-header">Dokumentuak</div>
+		<div class="card-body">
+			{% if dantza.dokumentazioa %}
+				<div class="table-responsive">
+					<table class="table table-hover table-striped">
+						<thead>
+							<tr>
+							  <th scope="col">Izena</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+						{% for d in dantza.dokumentazioa %}
+							  <tr>
+								  <th scope="row" style="vertical-align:middle;">{% with dname=d.dock|split:'/' %}{{ dname|last }}{% endwith %}</th>
+								  
+								  <td style="vertical-align:middle;text-align: right;">
+									  <a class="btn btn-primary" target="_blank" href="{% static d.get_static %}">Ikusi</a>
+									  	{% if request.user.is_superuser %}
+										  <a class="btn btn-danger" target="_blank" href="?d&id={{ d.pk }}">Ezabatu</a>
+										{% endif %}
+								  </td>
+								   
+							  </tr>
+						{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			{% else %}
+				Ez dago dokumenturik.
+			{% endif %}
+			
+		</div>
+	</div>
+
+
+	<div class="modal fade" id="gehituDantza" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Gehitu dokumentuak</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+				</button>
+			  </div>
+			  <div class="modal-body">
+			  	  <form method="POST" enctype="multipart/form-data">
+					  {% csrf_token %}
+					  <div class="form-group">
+					  	<label for="myfiles">Dokumentuak</label>
+					  	<input type="file" name="myfiles" class="form-control-file" multiple="multiple">
+					  	<small>Dantzarekin lotutako fitxategiak: apunteak, musika...</small>
+					  </div>
+					  <div class="clearfix">
+					  <input type="submit" class="btn btn-success float-right" value="Gehitu"/>
+					</div>
+				  </form>
+			  </div>
+			</div>
+		  </div>
+		</div>
+
+</div>
+
+<!--<form method="POST" enctype="multipart/form-data">
+	{% csrf_token %}
+	<input type="file" name="myfiles">
+    <button type="submit">Upload</button>
+</form>
+
+{% if uploaded_file_url %}
+    <p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>
+  {% endif %}-->
+
+{% endblock edukia %}

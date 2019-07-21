@@ -1,0 +1,140 @@
+{% extends "dantza/base.html" %}
+
+{% block title %}Arropa{% endblock title %}
+
+{% block edukia %}
+<div class="container">
+	<a class="btn btn-primary" href="/arropa" style="margin-top: 15px;">Atzera</a>
+	<div class="card" style="margin-top: 15px; margin-bottom: 15px;">
+		<div class="card-header">Arropa zerrenda</div>
+		<div class="card-body">
+	{% if a_list %}
+	{% load auth_extras %}
+		<div class="table-responsive">
+			<table class="table table-hover table-striped">
+			  <thead>
+				<tr>
+				  <th scope="col">Mota</th>
+				  <th scope="col">Deskribapena</th>
+				  <th scope="col">Egoera</th>
+					<th scope="col">Mailegatua?</th>
+					<th>Ekintzak</th>
+				</tr>
+			  </thead>
+			  <tbody>
+			{% for a in a_list %}
+				  {% if 'edit' in request.GET %}
+				  	
+				  	{% if a.pk|stringformat:"i" == request.GET|get:'id' %}
+				  		<tr>
+							<form method="POST">
+								{% csrf_token %}
+						  <td scope="row" style="vertical-align:middle;">
+							{{ a.mota }}
+						  </td>
+						  <td style="vertical-align:middle;">
+							 <input type="text" id="desk" name="desk" class="form-control" value="{{ a.deskribapena }}" autofocus/>
+						  </td>
+						  <td style="vertical-align:middle;">
+							  <div id="btn" class="btn btn-outline-warning" onclick="bai()">Egoera {% if a.egoera == 'Ona' %}'Txarra'ra{% else %}'Ona'ra{% endif %} aldatu</div>
+							<input type="hidden" value="0" id="aldatuEgoera" name="aldatuEgoera">
+							  <script>
+								  function bai(){
+								  	if(document.getElementById('btn').classList.contains('active')){
+										document.getElementById('btn').classList.remove('active');
+										document.getElementById('aldatuEgoera').value = "0";
+									}else{
+										document.getElementById('btn').classList.add('active');
+										document.getElementById('aldatuEgoera').value = "1";
+									}
+								  }
+							  </script>
+							</td>
+						  <td style="vertical-align:middle;">
+							  {% if a.mailegatua %}
+								Bai, {{ a.get_mailegua.dantzari }}-(r)i
+							  {% else %}
+								Ez
+							  {% endif %}
+						  </td>
+						  <td style="vertical-align:middle;">
+							  <input type="submit" class="btn btn-success" value="Gorde">
+						  </td>
+							</form>
+					  </tr>
+				  	{% else %}
+				  		<tr>
+						  <th scope="row" style="vertical-align:middle;">{{ a.mota }}</th>
+						  <td style="vertical-align:middle;">{{ a.deskribapena }}</td>
+						  <td style="vertical-align:middle;">{{ a.egoera }}</td>
+						  <td style="vertical-align:middle;">
+							  {% if a.mailegatua %}
+								Bai, {{ a.get_mailegua.dantzari }}-(r)i
+							  {% else %}
+								Ez
+							  {% endif %}
+						  </td>
+						  <td style="vertical-align:middle;">
+							  {% if 'page' in request.GET %}
+							  	<a class="btn btn-primary" href="?page={{ request.GET|get:'page' }}&edit&id={{ a.pk }}">Editatu</a>
+							  {% else %}
+							  	<a class="btn btn-primary" href="?edit&id={{ a.pk }}">Editatu</a>
+							  {% endif %}
+							  
+						  	  <a class="btn btn-danger" href="?delete&id={{ a.pk }}">Ezabatu</a>
+						  </td>
+					  </tr>
+				  	{% endif %}
+				  {% else %}
+				  	<tr>
+					  <th scope="row" style="vertical-align:middle;">{{ a.mota }}</th>
+					  <td style="vertical-align:middle;">{{ a.deskribapena }}</td>
+					  <td style="vertical-align:middle;">{{ a.egoera }}</td>
+					  <td style="vertical-align:middle;">
+						  {% if a.mailegatua %}
+						  	Bai, {{ a.get_mailegua.dantzari }}-(r)i
+						  {% else %}
+						  	Ez
+						  {% endif %}
+					  </td>
+					  <td style="vertical-align:middle;">
+						  {% if 'page' in request.GET %}
+							  	<a class="btn btn-primary" href="?page={{ request.GET|get:'page' }}&edit&id={{ a.pk }}">Editatu</a>
+							  {% else %}
+							  	<a class="btn btn-primary" href="?edit&id={{ a.pk }}">Editatu</a>
+							  {% endif %}
+						   <a class="btn btn-danger" href="?delete&id={{ a.pk }}">Ezabatu</a>
+					  </td>
+				  </tr>
+				  
+				  {% endif %}
+				  
+			{% endfor %}
+				</tbody>
+			</table>
+			
+<nav aria-label="paginator">
+  <ul class="pagination justify-content-center">
+	  {% if a_list.has_previous %}
+	  	<li class="page-item"><a class="page-link" href="?page={{ a_list.previous_page_number }}">Aurrekoa</a></li>
+	  {% else %}
+	  	<li class="page-item disabled"><a class="page-link" href="#">Aurrekoa</a></li>
+	  {% endif %}
+    <li class="page-item active"><div class="page-link">{{ a_list.number }}</div></li>
+      {% if a_list.has_next %}
+	  	<li class="page-item"><a class="page-link" href="?page={{ a_list.next_page_number }}">Hurrengoa</a></li>
+	  {% else %}
+	  	<li class="page-item disabled"><a class="page-link" href="#">Hurrengoa</a></li>
+	  {% endif %}
+  </ul>
+</nav>
+			
+			</div>
+
+	{% else %}
+		Oraindik ez dago arroparik<br/>
+	{% endif %}
+		</div>
+	</div>
+</div>
+{% endblock edukia %}

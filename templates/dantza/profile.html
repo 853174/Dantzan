@@ -1,0 +1,166 @@
+{% extends "dantza/base.html" %}
+
+{% block title %}Profila{% endblock title %}
+
+{% block edukia %}
+<div class="container">
+	<div class="card" style="margin-top:15px; margin-bottom:15px;">
+		<div class="card-header">
+			Profila
+		</div>
+		<div class="card-body">
+			{% if 'edit' in request.GET %}
+				<form method="POST">
+					{% csrf_token %}
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="izena">Izena</label>
+								<input  type="text" class="form-control" id="izena" name="izena" value="{{ d.izena }}"/>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="jaio">Jaiotze data</label>
+								<input  type="date" class="form-control" id="jaio" name="jaio"/>
+								<script>
+									var y = {{ d.jaiotze_data.year }};
+									var m = {{ d.jaiotze_data.month }};
+									var d ={{ d.jaiotze_data.day }};
+									document.getElementById('jaio').valueAsDate = new Date(y,m-1,d);
+								</script>
+							</div>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label for="abizenak">Abizenak</label>
+						<input  type="text" class="form-control" id="abizenak" name="abizenak" value="{{ d.abizenak }}"/>
+					</div>
+					
+					<div class="form-group">
+						<label for="email">Korreoa</label>
+						<input required type="email" class="form-control" id="email" name="email" value="{{ d.email }}"/>
+					</div>
+					<hr>
+					<input type="submit" class="btn btn-primary" value="Editatu"/><a href="/dantzari/{{ d.pk }}/" style="margin-left: 5px" class="btn btn-secondary">Atzera</a>
+				</form>
+					
+			{% elif 'new_tel' in request.GET %}
+				<form method="POST">
+					{% csrf_token %}
+					<div class="form-group">
+						<label for="tel">Telefono berria</label>
+						<input  type="text" class="form-control" id="tel" name="tel"/>
+					</div>
+					<input type="submit" class="btn btn-primary" value="Gehitu"/>
+				</form>
+			{% else %}
+				<div class="row">
+					<div class="col-md-4">
+						<b>Izena:</b> {{ d.izena }}
+					</div>
+					<div class="col-md-4">
+						<b>Abizenak:</b> {{ d.abizenak }}
+					</div>
+					<div class="col-md-4">
+						<b>Jaiotze data:</b> {{ d.jaiotze_data }}
+					</div>
+					<div class="col-md-4">
+						<b>Korreoa:</b> {{ d.email }}
+					</div>
+					<div class="col-md-8">
+						<b>Telefonoa(k):</b> {{ d.telefonoak }}
+					</div>
+				</div>
+				<hr>
+				<div class="row">
+					<div class="col-md-4">
+						<a href="?edit" class="btn btn-primary btn-block">Editatu informazioa</a>
+					</div>
+					<div class="col-md-4">
+						<a href="?new_tel" class="btn btn-secondary btn-block">Telefonoa gehitu</a>
+					</div>
+					{% if request.user.is_superuser %}
+					<div class="col-md-4">
+						<a href="?del" class="btn btn-danger btn-block">Ezabatu</a>
+					</div>
+					{% endif %}
+
+				</div>
+			{% endif %}
+			
+			
+		</div>
+	</div>
+	<div class="card">
+		<div class="card-header">Ardurak</div>
+		<div class="card-body">
+	{% if request.user.is_superuser %}
+	
+		{% if not d.is_materialArduraduna %}
+			<a href="?ma" class="btn btn-outline-danger">Material arduraduna izendatu</a>
+		{% else %}
+			<a href="?n_ma" class="btn btn-outline-danger">Materialaren ardura kendu</a>
+		{% endif %}
+	
+		{% if not d.is_arropaArduraduna %}
+			<a href="?aa" class="btn btn-outline-secondary">Arropa arduraduna izendatu</a>
+		{% else %}
+			<a href="?n_aa" class="btn btn-outline-secondary">Arroparen ardura kendu</a>
+		{% endif %}
+	{% else %}
+		{% if d.is_materialArduraduna %}
+			<a href="/materiala" class="btn btn-outline-danger">Materiala kudeatu</a>
+		{% endif %}
+	
+		{% if d.is_arropaArduraduna %}
+			<a href="/arropa" class="btn btn-outline-secondary">Arropa kudeatu</a>
+		{% endif %}	
+			
+		{% if not d.is_arropaArduraduna and not d.is_materialArduraduna %}
+			Ez duzu inolako ardurarik.
+		{% endif %}
+			
+			
+	{% endif %}
+		</div>
+	</div>
+	
+	<div class="card" style="margin-top:15px;">
+		<div class="card-header">
+			Maileguak
+		</div>
+		<div class="card-body">
+			{% if d.mailegu_lista|length == 0 %}
+				Oraindik ez da mailegurik egin.
+			{% else %}
+			<div class="table-responsive">
+			<table class="table table-hover table-striped">
+			  <thead>
+				<tr>
+				  <th scope="col">Mailegatze data</th>
+				  <th scope="col">Arropa</th>
+				  <th scope="col">Tresnak</th>
+					<th scope="col">Itzulita?</th>
+				</tr>
+			  </thead>
+			  <tbody>
+				{% for m in d.mailegu_lista %}
+					<tr>
+					  <th scope="row" style="vertical-align:middle;">{{ m.mailegatze_data }}</th>
+					  <td style="vertical-align:middle;">{{ m.arropa.all|join:", " }}</td>
+						<td style="vertical-align:middle;">{{ m.materiala.all|join:", " }}</td>
+						<td style="vertical-align:middle;">{% if m.itzulita %}Bai{% else %}Ez{% endif %}</td>
+				  </tr>
+				{% endfor %}
+				  </tbody>
+			</table>
+			</div>
+			{% endif %}
+			
+			
+		</div>
+	</div>
+</div>
+{% endblock edukia %}

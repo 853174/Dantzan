@@ -1,0 +1,72 @@
+{% extends "dantza/base.html" %}
+
+{% block title %}Erregistratu{% endblock title %}
+
+{% block edukia %}
+<div class="container">
+	<div class="card" style="margin-top:15px">
+		<div class="card-header">
+			<b>Erregistratu</b>
+		</div>
+		<div class="card-body">
+			{% if signup_err %}
+				<div class="alert alert-danger" role="alert">
+				  {{ signup_err }}
+				</div>
+			{% endif %}
+			{% if step != 2 %}
+				<form method="POST">
+					{% csrf_token %}
+					<div class="form-group">
+						<label for="username">Erabiltzailea</label>
+						<input required type="text" class="form-control" id="username" name="username"/>
+					</div>
+					<div class="form-group">
+						<label for="password">Pasahitza</label>
+						<input required type="password" class="form-control" id="password" name="password"/>
+					</div>
+					<div class="form-group">
+						<label for="password2">Pasahitza errepikatu</label>
+						<input required type="password" class="form-control" id="password2" name="password2"/>
+					</div>
+					<button type="submit" class="btn btn-success btn-block">Hurrengoa</button>
+				</form>
+			{% else %}
+				<form method="POST" action="/signup_end">
+					{% csrf_token %}
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="izena">Izena</label>
+								<input required type="text" class="form-control" id="izena" name="izena"/>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="abizenak">Abizenak</label>
+								<input required type="text" class="form-control" id="abizenak" name="abizenak"/>
+							</div>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label for="jaio">Jaiotze data</label>
+						<input required type="date" class="form-control" id="jaio" name="jaio"/>
+					</div>
+	
+					<div class="form-group">
+						<label for="email">Korreoa</label>
+						<input required type="email" class="form-control" id="email" name="email"/>
+					</div>
+					<div class="form-group">
+						<label for="tel">Telefonoa</label>
+						<input required type="text" pattern="\d{9}" class="form-control" id="tel" name="tel"/>
+					</div>
+					<button type="submit" class="btn btn-success btn-block">Amaitu</button>
+				</form>
+			{% endif %}
+		</div>
+	</div>
+</div>
+
+{% endblock edukia %}

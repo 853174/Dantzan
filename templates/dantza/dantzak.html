@@ -1,0 +1,113 @@
+{% extends "dantza/base.html" %}
+
+{% block title %}Dantzak{% endblock title %}
+
+{% block edukia %}
+{% load auth_extras %}
+
+<div class="container">
+
+	{% if request.user.is_superuser %}
+	<div class="clearfix">
+		<button type="button" style="margin-top: 15px;" class="btn btn-primary float-right" data-toggle="modal" data-target="#gehituDantza">
+		  Gehitu dantza
+		</button>
+	</div>
+	{% endif %}
+
+	<div class="card" style="margin-top:15px">
+		<div class="card-header">Dantzak</div>
+		<div class="card-body">
+			{% if dantzak %}
+				<div class="table-responsive">
+					<table class="table table-hover table-striped">
+						<thead>
+							<tr>
+							  <th scope="col">Izena</th>
+							  <th scope="col">Deskribapena</th>
+							  <th scope="col">Iraupena (estimazioa)</th>
+							  <th scope="col">Atxikitutako dokumentuak</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+						{% for d in dantzak %}
+							  <tr>
+								  <th scope="row" style="vertical-align:middle;">{{ d.izena }}</th>
+								  <td style="vertical-align:middle;">{{ d.deskr }}</td>
+								  <td style="vertical-align:middle;">{{ d.iraupena }} min.</td>
+								  <td style="vertical-align:middle;">{{ d.dokumentu_kopurua }}</td>
+								  
+								  <td style="vertical-align:middle;">
+									  <a class="btn btn-primary" href="/dantzak/{{ d.id }}/">Kontsultatu</a>
+								  </td>
+							  </tr>
+						{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			{% else %}
+				Ez dago dantzarik.
+			{% endif %}
+			
+		</div>
+	</div>
+
+
+	<div class="modal fade" id="gehituDantza" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Gehitu dantza</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+				</button>
+			  </div>
+			  <div class="modal-body">
+			  	  <form method="POST" enctype="multipart/form-data">
+					  {% csrf_token %}
+					  <div class="form-group">
+					  	<label for="izena">Izena</label>
+					  	<input type="text" id="izena" name="izena" class="form-control" required/>
+					  </div>
+					  <div class="form-group">
+						  <label for="deskr">Deskribapena</label>
+						  <input type="text" id="deskr" name="deskr" class="form-control"/>
+					  </div>
+					  <div class="form-group">
+					  	<label for="iraupen">Iraupena (estimazioa, minutuetan)</label>
+					  	<div class="input-group">
+						        <input type="number" id="iraupen" name="iraupen" class="form-control" required/>
+						        <div class="input-group-append">
+						        	<div class="input-group-text">min.</div>
+						        </div>
+						    </div>
+					  </div>
+					  <hr>
+					  <div class="form-group">
+					  	<label for="myfiles">Dokumentuak (hautazkoa)</label>
+					  	<input type="file" name="myfiles" class="form-control-file" multiple="multiple">
+					  	<small>Dantzarekin lotutako fitxategiak: apunteak, musika...</small>
+					  </div>
+					  <div class="clearfix">
+					  <input type="submit" class="btn btn-success float-right" value="Gehitu"/>
+					</div>
+				  </form>
+			  </div>
+			</div>
+		  </div>
+		</div>
+
+</div>
+
+<!--<form method="POST" enctype="multipart/form-data">
+	{% csrf_token %}
+	<input type="file" name="myfiles">
+    <button type="submit">Upload</button>
+</form>
+
+{% if uploaded_file_url %}
+    <p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>
+  {% endif %}-->
+
+{% endblock edukia %}

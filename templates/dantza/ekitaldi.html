@@ -1,0 +1,209 @@
+{% extends "dantza/base.html" %}
+
+{% block title %}{{ ekitaldi.izena }}{% endblock title %}
+
+{% block edukia %}
+{% load auth_extras %}
+<div class="container">
+
+<h3 style="margin-top: 15px;">{{ ekitaldi.izena }}</h3>
+<hr>
+
+<!-- Dantzari guztien zerrenda administratzailearentzat... Nork parte hartuko du ekitaldi honetan? -->
+{% with user_d=request.user|get_dantzari %}
+{% if ekitaldi|is_partehartzaile:user_d or request.user.is_superuser %}
+	<div class="clearfix">
+	{% if request.user.is_superuser %}
+	
+		<button type="button" style="margin-top: 15px;" class="btn btn-primary float-right" data-toggle="modal" data-target="#dantzariak">
+		  Gehitu dantzariak
+		</button>
+	
+	{% else %}
+		<a href="?d_id={{ user_d.pk }}&ep" style="margin-top: 15px;" class="btn btn-danger float-right">
+		  Ez dut parte hartuko
+		</a>
+	{% endif %}
+		<a href="/ekitaldiak" style="margin-top: 15px;" class="btn btn-primary float-left">
+		  Atzera
+		</a>
+	</div>
+	<div class="card" style="margin-top:15px">
+		<div class="card-header">Dantzariak</div>
+		<div class="card-body">
+		{% if ekitaldi.dantzariak.all %}
+		<div class="table-responsive">
+			<table class="table table-hover table-striped">
+			  <thead>
+				<tr>
+				  <th scope="col">Dantzaria</th>
+				  {% if request.user.is_superuser %}
+				  	<th scope="col"></th>
+				  {% endif %}
+				</tr>
+			  </thead>
+			  <tbody>
+			{% for d in ekitaldi.dantzariak.all %}
+				  <tr> 
+					  <th scope="row" style="vertical-align:middle;">{{ d }}</th>
+			  
+			  		  {% if request.user.is_superuser %}
+			 			<td style="vertical-align:middle;text-align: right;"><a href="?d_id={{ d.pk }}&ep" class="btn btn-danger">Ez du parte hartuko</a></td>
+			 		  {% endif %}
+				  </tr>
+			{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		{% else %}
+			Ez dago dantzaririk.<br/>
+		{% endif %}
+		</div>
+	</div>
+{% else %}
+	<div class="card">
+		<div class="card-header">Parte hartuko duzu ekitaldian?</div>
+		<div class="card-body">
+			<div class="row">
+				<div class="col">
+					<a href="?d_id={{ user_d.pk }}&ph" class="btn btn-success btn-block">Bai</a>
+				</div>
+				<div class="col">
+					<a href="?d_id={{ user_d.pk }}&ep" class="btn btn-danger btn-block">Ez</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endif %}
+{% endwith %}
+
+<!-- Ekitaldien zerrenda, erregistratuentzako ikusgarria -->
+{% if request.user.is_superuser %}
+	<div class="clearfix">
+		<button type="button" style="margin-top: 15px;" class="btn btn-primary float-right" data-toggle="modal" data-target="#dantzak">
+		  Gehitu dantzak
+		</button>
+	</div>
+{% endif %}
+<div class="card" style="margin-top: 15px; margin-bottom:15px;">
+		<div class="card-header">Dantzak</div>
+		<div class="card-body">
+	{% if ekitaldi.dantzak.all %}
+	<div class="table-responsive">
+		<table class="table table-hover table-striped">
+		  <thead>
+			<tr>
+			  <th scope="col">Izena</th>
+			  <th scope="col">Iraupena</th>
+			  {% if request.user.is_superuser %}
+			  <th scope="col"></th>
+			  {% endif %}
+			</tr>
+		  </thead>
+		  <tbody>
+		{% for d in ekitaldi.dantzak.all %}
+			  <tr> 
+				  <th scope="row" style="vertical-align:middle;"><a href="/dantzak/{{ d.pk }}/">{{ d.izena }}</a></th>
+				  <td style="vertical-align:middle;">{{ d.iraupena }} min.</td>
+				  {% if request.user.is_superuser %}
+				  <td  style="vertical-align:middle; text-align: right;">
+					  <a href="?dantza_id={{ d.pk }}&de" class="btn btn-danger">Ez da dantzatuko</a></td>
+					  {% endif %}
+			  </tr>
+		{% endfor %}
+			</tbody>
+</table>
+			</div>
+
+		Ekitaldiaren iraupena: {{ ekitaldi.aktuazio_denbora }} min.
+	{% else %}
+		Ez dago dantzarik.<br/>
+	{% endif %}
+		</div>
+</div>
+</div>
+
+
+<div class="modal fade" id="dantzariak" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Gehitu arropa</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+				</button>
+			  </div>
+			  <div class="modal-body">
+			  	  {% if d_list %}
+					<div class="table-responsive">
+						<table class="table table-hover table-striped">
+						  <thead>
+							<tr>
+							  <th scope="col">Dantzaria</th>
+							  	<th scope="col"></th>
+							</tr>
+						  </thead>
+						  <tbody>
+						{% for d in d_list %}
+							{% if not ekitaldi|is_partehartzaile:d %}
+							  <tr> 
+								  <th scope="row" style="vertical-align:middle;">{{ d }}</th>
+						  
+						 			<td style="vertical-align:middle;"><a href="?d_id={{ d.pk }}&ph" class="btn btn-success">Parte hartuko du</a></td>
+							  </tr>
+							 {% endif %}
+						{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					{% else %}
+						Ez dago dantzaririk.<br/>
+					{% endif %}
+			  </div>
+			</div>
+		  </div>
+		</div>
+
+
+		<div class="modal fade" id="dantzak" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Gehitu dantzak</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+				</button>
+			  </div>
+			  <div class="modal-body">
+			  	  {% if dantzak %}
+					<div class="table-responsive">
+						<table class="table table-hover table-striped">
+						  <thead>
+							<tr>
+							  <th scope="col">Dantza</th>
+							  <th scope="col">Iraupena</th>
+							  	<th scope="col"></th>
+							</tr>
+						  </thead>
+						  <tbody>
+						{% for d in dantzak %}
+							{% if not ekitaldi|has_dantza:d %}
+							  <tr> 
+								  <th scope="row" style="vertical-align:middle;">{{ d.izena }}</th>
+						  			<td scope="row" style="vertical-align:middle;">{{ d.iraupena }} min.</td>
+						 			<td style="vertical-align:middle;"><a href="?dantza_id={{ d.pk }}&db" class="btn btn-success">Dantzatuko da</a></td>
+							  </tr>
+							 {% endif %}
+						{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					{% else %}
+						Ez dago dantzaririk.<br/>
+					{% endif %}
+			  </div>
+			</div>
+		  </div>
+		</div>
+{% endblock edukia %}
