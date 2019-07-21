@@ -7,41 +7,41 @@ Aldaketa orokorrak:
 
 Web orriak dituen funtzionalitateak:
 
-   (Dantzariak)
+    (Dantzariak)
     - Dantzari berriak erregistratzea
     - Dantzarien login eta profila
     
-   (Arropa eta materiala)
+    (Arropa eta materiala)
     - Arropa eta material berrien sorrera
     - Arropa eta materialen ezabatzea
     - Arroparen informazioaren eguneraketa (egoera, deskribapena)
     
-   (Maileguak)
+    (Maileguak)
     - Mailegu berriak egin
     - Egindako maileguak itzuli
     - Itzuli gabeko maileguak kudeatu
     
-   (Inbentarioa)
+    (Inbentarioa)
     - Inbentario-unitateak (armairuak) sortu
     - Sortutako arropa eta materiala armairuetan "gorde"
     - Arropa eta materiala non dagoen gordeta kontsultatu
     
-   (Administrazioa)
+    (Administrazioa)
     - Admin gunera atzipena
     - Dantzarien kudeaketarako eremua
     - Mezuak bidaltzeko eremua
 
-   (Ekitaldiak)
+    (Ekitaldiak)
     - Ekitaldi berriak sortu
     - Ekitaldietan dantzariak eta dantzak sartu eta kendu
     - Dantzari bezala, ekitaldiadian parte hartuko duzun adierazi
 
-   (Dantzak)
+    (Dantzak)
     - Dantza berriak sortu
     - Dantzei dokumentazioa esleitu edo kendu
     - Dantzen dokumentazioa kontsultatu
 
-   (Mezularitza)
+    (Mezularitza)
     - Arropa eta Material aruradunei mezuak bidaltzeko aukera, dantzari gisa
     - Hasieran, rol bakoitzak bere mezuak irakurtzeko eremua
     - Mezu automatiko batzuen sorrera
