@@ -8,127 +8,48 @@
 <!-- Mailegua egiteko modala -->
 
 <div class="clearfix">
-<button type="button" style="margin-top: 15px;" class="float-right btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-  Mailegu berria egin
-</button>
-</div>
-
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Maileguaren informazioa</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form method="POST">
-			{% csrf_token %}
-			<div class="form-group">
-				  <label for="d">Dantzaria</label>
-				  <select id="d" name="d" class="form-control" onchange="m()">
-					  {% if d_list|length == 0 %}
-					  <option value="-1">Ez dago dantzaririk.</option>
-					  {% endif %}
-					  <option value="-2">Kanpoko dantza talde bati mailegatu.</option>
-					  {% for d in d_list %}
-					  	<option value="{{ d.pk }}">{{ d.izena|capfirst }} {{ d.abizenak|capfirst }}</option>
-					  {% endfor %}
-				  </select>
-			  </div>
-
-			<div id="kanpoko_taldea" class="form-group">
-				<label for="kanpo_talde">Kanpoko taldea</label>
-				<input type="text" name="kanpo_talde" class="form-control"/>
-			</div>
-
-			<div class="form-group">
-				  <label for="arropa">Arropa</label>
-				  <select id="arropa" name="arropa" class="form-control" multiple>
-					  <option value="-1" selected>Arroparik ez.</option>
-					  {% for a in arropa %}
-					  	<option value="{{ a.pk }}">{{ a }}</option>
-					  {% endfor %}
-				  </select>
-					<small>Arropa bat baino gehiago hautatzeko, mantendu <i>Ctrl</i> sakatuta eta aukeratu</small>
-			  </div>
-			<div class="form-group">
-				  <label for="materialak">Materiala</label>
-				  <select id="materialak" name="materialak" class="form-control" multiple>
-					  <option value="-1" selected>Materialik ez.</option>
-					  {% for mat in materiala %}
-					  	<option value="{{ mat.pk }}">{{ mat.mota }} ({{ mat.libre_kop }})</option>
-					  {% endfor %}
-				  </select>
-				  <small>Material bat baino gehiago hautatzeko, mantendu <i>Ctrl</i> sakatuta eta aukeratu</small>
-			  </div>
-			<div class="clearfix">
-			  <input type="submit" class="btn btn-success float-right" value="Mailegatu" id="bidali"/>
-			</div>
-		</form>
-      </div>
-    </div>
-  </div>
+	<a href="/maileguak/berria" target="_blank" style="margin-top: 15px;" class="float-right btn btn-primary">
+	  	Mailegu berria egin
+	</a>
 </div>
 
 <!-- Itzuli gabeko maileguen zerrenda, administratzaileak eta arduradunek ikusi ahalko dute -->
 <div class="card" style="margin-top: 15px; margin-bottom:15px;">
 		<div class="card-header">Itzuli gabeko maileguak</div>
 		<div class="card-body">
-	{% if mail_list %}
-	<div class="table-responsive">
-		<table class="table table-hover table-striped">
-		  <thead>
-			<tr>
-			  <th scope="col">Dantzaria</th>
-			  <th scope="col">Data</th>
-			  <th scope="col">Arropa</th>
-			  <th scope="col">Tresnak</th>
-				<th scope="col">Korreoa</th>
-				<th scope="col">Telefonoa(k)</th>
-				<th scope="col"></th>
-			</tr>
-		  </thead>
-		  <tbody>
-		{% for m in mail_list %}
-			  <tr> 
-				  <th scope="row" style="vertical-align:middle;">{{ m.dantzari }} {% if m.dantza_taldea %}<br/>[{{ m.dantza_taldea }}]{% endif %}</th>
-				  <td style="vertical-align:middle;">{{ m.mailegatze_data }}</td>
-				  <td style="vertical-align:middle;">{{ m.arropa.all|join:", " }}</td>
-				  <td style="vertical-align:middle;">{{ m.materiala.all|join:", " }}</td>
-				  <td style="vertical-align:middle;"><a href="mailto:{{ d.email }}">{{ m.dantzari.email }}</a></td>
-				  <td style="vertical-align:middle;">{{ m.dantzari.telefonoak }}</td>
-				  <td  style="vertical-align:middle;">
-					  <a href="?return&id={{ m.pk }}" class="btn btn-primary">Itzuli</a>
-			  </tr>
-		{% endfor %}
-			</tbody>
-</table>
-			</div>
-	{% else %}
-		Ez dago itzuli gabeko mailegurik<br/>
-	{% endif %}
+			{% if mail_list %}
+				<div class="table-responsive">
+					<table class="table table-hover table-striped">
+					  <thead>
+							<tr>
+							  	<th scope="col">Dantzaria</th>
+							  	<th scope="col">Data</th>
+							  	<th scope="col">Arropa</th>
+							  	<th scope="col">Tresnak</th>
+								<th scope="col">Korreoa</th>
+								<th scope="col">Telefonoa(k)</th>
+								<th scope="col"></th>
+							</tr>
+					  	</thead>
+					  	<tbody>
+							{% for m in mail_list %}
+							  	<tr> 
+								  	<th scope="row" style="vertical-align:middle;">{% if m.dantza_taldea %}{{ m.dantza_taldea }}<br/>({{ m.dantzari }}){% else %}{{ m.dantzari }}{% endif %}</th>
+								  	<td style="vertical-align:middle;">{{ m.mailegatze_data }}</td>
+								  	<td style="vertical-align:middle;">{{ m.arropa.all|join:", " }}</td>
+								  	<td style="vertical-align:middle;">{{ m.materiala.all|join:", " }}</td>
+								  	<td style="vertical-align:middle;"><a href="mailto:{{ d.email }}">{{ m.dantzari.email }}</a></td>
+								 	<td style="vertical-align:middle;">{{ m.dantzari.telefonoak }}</td>
+								  	<td  style="vertical-align:middle;">
+									<a href="?return&id={{ m.pk }}" class="btn btn-primary">Itzuli</a>
+							  	</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			{% else %}
+				Ez dago itzuli gabeko mailegurik<br/>
+			{% endif %}
 		</div>
 </div>
-</div>
-
-<script>
-	function m(){
-		switch(document.getElementById('d').value){
-			case '-2':
-				document.getElementById('kanpoko_taldea').hidden = false;
-				document.getElementById('bidali').hidden = false;
-				break;
-			case '-1':
-				document.getElementById('bidali').hidden = true;
-				break;
-			default:
-				document.getElementById('kanpoko_taldea').hidden = true;
-				document.getElementById('bidali').hidden = false;
-		}
-  	}
- 	m();
-	
-</script>
 {% endblock edukia %}

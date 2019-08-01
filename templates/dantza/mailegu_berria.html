@@ -1,0 +1,190 @@
+{% extends "dantza/base.html" %}
+
+{% block head %}
+<style>
+	.zerrenda {
+		position: relative;
+		height: 200px;
+		overflow: auto;
+	}
+</style>
+{% endblock head %}
+
+{% block title %}Mailegu berria{% endblock title %}
+
+{% block edukia %}
+<div class="container" style="margin-top:15px;">
+
+    <h5 class="modal-title" id="exampleModalLabel">Maileguaren informazioa</h5>
+    <hr/>
+    <form method="POST">
+		{% csrf_token %}		
+		<div class="row">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-header">Nori?</div>
+					<div class="card-body">
+						<div class="form-group">
+						  	<label for="d">Dantzaria</label>
+						  	<select id="d" name="d" class="form-control" onchange="m()">
+							 	{% if d_list|length == 0 %}
+							 	<option value="-1">Ez dago dantzaririk.</option>
+							 	{% endif %}
+							  	<option value="-2">Kanpoko dantza talde bati mailegatu.</option>
+							  	{% for d in d_list %}
+							  	<option value="{{ d.pk }}">{{ d.izena|capfirst }} {{ d.abizenak|capfirst }}</option>
+							  	{% endfor %}
+						  	</select>
+					 	</div>
+
+						<div id="kanpoko_taldea" class="form-group">
+							<label for="kanpo_talde">Kanpoko taldea</label>
+							<input type="text" name="kanpo_talde" class="form-control"/>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="card" style="margin-top: 15px;">
+					<div class="card-header">Arropa zerrenda</div>
+					<div class="card-body">
+						<div class="form-group zerrenda" id="arropaZerrenda">
+							{% for a in arropa %}
+								<div id="A{{ a.pk }}"><input type="checkbox" name="arropa_zerrenda" value="{{ a.pk }}" oninput="updateArropa(this)"> {{ a }}<br></div>
+						  	{% endfor %}
+				  		</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="card" style="margin-top: 15px;">
+					<div class="card-header">Hautatutako arropa</div>
+					<div class="card-body">
+						<div class="form-group zerrenda" id="hautatutakoArropa">
+					  		<div id="arroparikEz"><input type="checkbox" name="arropa" value="-1" checked disabled> Arroparik ez.<br></div>
+				  		</div>
+					</div>
+				</div>				
+			</div>
+			<div class="col-md-6">
+				<div class="card" style="margin-top: 15px;">
+					<div class="card-header">Material zerrenda</div>
+					<div class="card-body">
+						<div class="form-group zerrenda" id="materialZerrenda">
+							{% for a in materiala %}
+								<div id="M{{ a.pk }}"><input type="checkbox" name="material_zerrenda" value="{{ a.pk }}" oninput="updateMateriala(this)" data-whatever="{{ a.libre_kop }}"> {{ a.mota }} <span id="p">(<span id="M{{ a.pk }}_kop">{{ a.libre_kop }}</span>)</span><br></div>
+						  	{% endfor %}
+				  		</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="card" style="margin-top: 15px;">
+					<div class="card-header">Hautatutako materiala</div>
+					<div class="card-body">
+						<div class="form-group zerrenda" id="hautatutakoMateriala">
+					  		<div id="materialikEz"><input type="checkbox" name="materialak" value="-1" checked disabled> Materialik ez.<br></div>
+				  		</div>
+					</div>
+				</div>				
+			</div>
+			<div class="col-12">
+				<div style="margin-top: 15px; margin-bottom: 15px">
+				  <input type="submit" class="btn btn-success btn-block" value="Mailegatu" id="bidali"/>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script>
+	function updateArropa(elem){
+		var kop = $("input[name='arropa']:checked").length;
+		if(elem.checked){
+			if(kop == 1){
+				$("#arroparikEz").hide()
+			}
+			
+			$("#A" + elem.value).clone().appendTo($("#hautatutakoArropa"))
+			$("#hautatutakoArropa #A"+ elem.value).attr("id","HA"+ elem.value)
+			$("#HA" + elem.value + " input").attr("name","arropa")
+
+			$("#A" + elem.value).hide()
+			$("#A" + elem.value + " input").prop("checked",false)
+		}
+		else{
+			if(kop == 1){
+				$("#arroparikEz").show()
+			}
+
+			$("#HA" + elem.value).remove()
+			$("#A" + elem.value).show()
+		}
+	}
+
+	function updateMateriala(elem){
+		var kop = $("input[name='materialak']:checked").length;
+
+		var libre_kop = parseInt($("#M" + elem.value + "_kop").html())
+
+		if(elem.checked){
+
+			if(kop == 1){
+				$("#materialikEz").hide()
+			}
+
+			//if($("#HM" + elem.value).length){
+				// Esta ya en la lista?
+
+			//}
+
+			var newId = "HM"+ elem.value;
+
+			$("#M" + elem.value).clone().appendTo($("#hautatutakoMateriala"))
+			$("#hautatutakoMateriala #M"+ elem.value).attr("id",newId)
+			$("#" + newId + " input").attr("name","materialak")
+			$("#" + newId + " span[id='p']").remove()
+
+			if(libre_kop == 1){
+				$("#M" + elem.value).hide()
+			}
+
+			$("#M" + elem.value + "_kop").html(libre_kop - 1)
+			$("#M" + elem.value + " input").prop("checked",false)
+
+			
+			
+		}
+		else{
+			if(kop == 1){
+				$("#materialikEz").show()
+			}
+
+			if(libre_kop == 0){
+				$("#M" + elem.value).show()
+			}
+
+			$("#M" + elem.value + "_kop").html(libre_kop + 1)
+
+			elem.parentElement.remove()		
+		}
+	}
+
+	function m(){
+		switch(document.getElementById('d').value){
+			case '-2':
+				document.getElementById('kanpoko_taldea').hidden = false;
+				document.getElementById('bidali').hidden = false;
+				break;
+			case '-1':
+				document.getElementById('bidali').hidden = true;
+				break;
+			default:
+				document.getElementById('kanpoko_taldea').hidden = true;
+				document.getElementById('bidali').hidden = false;
+		}
+  	}
+ 	m();
+	
+</script>
+{% endblock edukia %}

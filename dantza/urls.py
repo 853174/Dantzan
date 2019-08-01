@@ -15,8 +15,11 @@ urlpatterns = [
 	
 	# Administratzaileen url-ak
 	path('dashboard', views.dashboard, name = 'dashboard'),
-	path('maileguak', views.maileguak, name = 'dashboard'),
 	path(r'dantzari/<int:dtz_id>/', views.profile, name='profile'),
+
+	# Maileguak
+	path('maileguak', views.maileguak, name = 'maileguak'),
+	path('maileguak/berria', views.mailegua_egin, name = 'mailegua_egin'),
 	
 	# Materiala
 	path('materiala', views.materiala, name = 'materiala'),

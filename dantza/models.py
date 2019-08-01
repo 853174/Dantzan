@@ -78,10 +78,21 @@ class Materiala(models.Model):
 	def __str__(self):
 		return self.mota
 	
-	def get_mailegatu_gabeko_tresna(self):
-		for t in Tresna.objects.filter(material_mota=self,mailegatua=False):
-			return t
-		return None
+	def get_mailegatu_gabeko_tresna(self,kop=1):
+		emaitza = []
+		tresnak = Tresna.objects.filter(material_mota=self,mailegatua=False)
+
+		if(len(tresnak)<kop):
+			return emaitza
+		elif(len(tresnak)== kop):
+			return tresnak
+		else:
+			for t in tresnak:
+				if(kop == 0):
+					return emaitza
+				emaitza.append(t)
+				kop -= 1
+			return []
 	
 	def tresna_kop(self):
 		return len(Tresna.objects.filter(material_mota=self))
@@ -116,6 +127,14 @@ class Tresna(models.Model):
 	
 	def __str__(self):
 		return self.material_mota.mota
+
+	def get_mailegua(self):
+		if self.mailegatua:
+			for m in Mailegua.objects.filter(itzulita=False):
+				if m.materiala.filter(pk=self.pk).exists():
+					return m	
+		else:
+			return None
 
 # Arropa
 

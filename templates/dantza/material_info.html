@@ -26,7 +26,9 @@
 						  <th scope="row" style="vertical-align:middle;">{{ a.material_mota }}</th>
 						  <td style="vertical-align:middle;">
 							  {% if a.mailegatua %}
-								Bai, {{ a.get_mailegua.dantzari }}-(r)i
+							  	Bai,
+							  	{% if a.get_mailegua.dantza_taldea %}{{ a.get_mailegua.dantza_taldea }}-(r)i<br/>({{ a.get_mailegua.dantzari }}){% else %}{{ a.get_mailegua.dantzari }}-(r)i{% endif %}
+								
 							  {% else %}
 								Ez
 							  {% endif %}

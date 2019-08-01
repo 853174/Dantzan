@@ -220,6 +220,30 @@ def maileguak(request):
 	if not request.user.groups.filter(name='arropa_arduradunak').exists() and not request.user.is_superuser and not request.user.groups.filter(name='material_arduradunak').exists():
 		return HttpResponseRedirect('/')
 	
+	maileguak = Mailegua.objects.filter(itzulita=False)
+
+	if 'return_success' in request.GET:
+		return render(request,'dantza/maileguak.html',{'mail_list':maileguak,'success': 'Mailegua itzuli da.'})		
+			
+	elif 'return' in request.GET:
+		m = Mailegua.objects.get(pk=request.GET['id'])
+		m.itzulita = True
+		for arr in m.arropa.all():
+			arr.mailegatua = False
+			arr.save()
+		for mat in m.materiala.all():
+			mat.mailegatua = False
+			mat.save()
+		m.save()
+
+		return HttpResponseRedirect('/maileguak?return_success')
+	return render(request,'dantza/maileguak.html',{'mail_list':maileguak})
+
+@login_required(login_url='/login')
+def mailegua_egin(request):
+	if not request.user.groups.filter(name='arropa_arduradunak').exists() and not request.user.is_superuser and not request.user.groups.filter(name='material_arduradunak').exists():
+		return HttpResponseRedirect('/')
+	
 	dantzari_list = Dantzaria.objects.all()
 	maileguak = Mailegua.objects.filter(itzulita=False)
 
@@ -228,21 +252,25 @@ def maileguak(request):
 
 	if request.method == 'POST':
 		if 'd' in request.POST:
+
 			if request.POST['d'] == '-1':
-				return render(request,'dantza/maileguak.html',{'d_list':dantzari_list, 'mail_list':maileguak, 
+				return render(request,'dantza/mailegu_berria.html',{'d_list':dantzari_list, 'mail_list':maileguak, 
 																   'materiala':m_list, 'arropa':a_list, 'err': 'Ezin da dantzaririk gabeko mailegurik egin.'})
 			
 			m_lista = []
 			for m in request.POST.getlist('materialak'):
+
 				if m == '-1':
 					continue
 				mat = Materiala.objects.get(pk=m)
-				t = mat.get_mailegatu_gabeko_tresna()
-				if t is not None:
-					m_lista.append(t)
+				ts = mat.get_mailegatu_gabeko_tresna(request.POST.getlist('materialak').count(m))
+				if len(ts) != 0:
+					for t in ts:
+						m_lista.append(t)
 				else:
-					return render(request,'dantza/maileguak.html',{'d_list':dantzari_list, 'mail_list':maileguak, 
-																   'materiala':m_list, 'arropa':a_list, 'err': 'Aukeratutako ' + mat + ' ez dago eskuragai.'})
+					return render(request,'dantza/mailegu_berria.html',{'d_list':dantzari_list, 'mail_list':maileguak, 
+																   'materiala':m_list, 'arropa':a_list, 'err': 'Aukeratutako ' + str(mat) + ' ez dago eskuragai.'})
+			
 			arr_lista = []
 			for i in request.POST.getlist('arropa'):
 				if i == '-1':
@@ -251,11 +279,11 @@ def maileguak(request):
 				if a is not None:
 					arr_lista.append(a)
 				else:
-					return render(request,'dantza/maileguak.html',{'d_list':dantzari_list, 'mail_list':maileguak, 
+					return render(request,'dantza/mailegu_berria.html',{'d_list':dantzari_list, 'mail_list':maileguak, 
 																   'materiala':m_list, 'arropa':a_list, 'err': 'Aukeratutako ' + a + ' ez dago eskuragai.'})
 			
 			if len(m_lista) == 0 and len(arr_lista) == 0:
-				return render(request,'dantza/maileguak.html',{'d_list':dantzari_list, 'mail_list':maileguak, 
+				return render(request,'dantza/mailegu_berria.html',{'d_list':dantzari_list, 'mail_list':maileguak, 
 							'materiala':m_list, 'arropa':a_list, 'err': 'Gutxienez material edo arropa bat hautatu behar da.'})
 			
 			if request.POST['d'] == '-2':
@@ -263,7 +291,7 @@ def maileguak(request):
 				d = Dantzaria.objects.get(user=request.user)
 				dt = request.POST['kanpo_talde']
 				if dt == "":
-					return render(request,'dantza/maileguak.html',{'d_list':dantzari_list, 'mail_list':maileguak,
+					return render(request,'dantza/mailegu_berria.html',{'d_list':dantzari_list, 'mail_list':maileguak,
 							'materiala':m_list, 'arropa':a_list, 'err': 'Dantza taldearen izena adierazi behar da.'})
 				mail = Mailegua(dantzari=d,mailegatze_data=datetime.datetime.today(),itzulita=False,dantza_taldea=dt)
 			else:
@@ -283,14 +311,14 @@ def maileguak(request):
 				x.mailegatua = True
 				x.save()
 			
-			return HttpResponseRedirect('/maileguak?new_success')
+			return HttpResponseRedirect('/maileguak/berria?new_success')
 
 	else:
 		if 'new_success' in request.GET:
-			return render(request,'dantza/maileguak.html',{'d_list':dantzari_list, 'mail_list':maileguak, 
+			return render(request,'dantza/mailegu_berria.html',{'d_list':dantzari_list, 'mail_list':maileguak, 
 															'materiala':m_list, 'arropa':a_list, 'success': 'Mailegu berria zuzen sortu da.'})
 		elif 'return_success' in request.GET:
-			return render(request,'dantza/maileguak.html',{'d_list':dantzari_list, 'mail_list':maileguak, 'materiala':m_list, 'arropa':a_list, 'arropa':a_list, 'success': 'Mailegua itzuli da.'})		
+			return render(request,'dantza/mailegu_berria.html',{'d_list':dantzari_list, 'mail_list':maileguak, 'materiala':m_list, 'arropa':a_list, 'arropa':a_list, 'success': 'Mailegua itzuli da.'})		
 				
 		elif 'return' in request.GET:
 			m = Mailegua.objects.get(pk=request.GET['id'])
@@ -304,7 +332,7 @@ def maileguak(request):
 			m.save()
 
 			return HttpResponseRedirect('/maileguak?return_success')
-		return render(request,'dantza/maileguak.html',{'d_list':dantzari_list,'mail_list':maileguak,'materiala':m_list,'arropa':a_list})
+		return render(request,'dantza/mailegu_berria.html',{'d_list':dantzari_list,'mail_list':maileguak,'materiala':m_list,'arropa':a_list})
 
 
 # MATERIALA
@@ -349,7 +377,6 @@ def material_info(request,m_id):
 		else:
 			t.delete()
 			if 'page' in request.GET:
-				print('########################################')
 				return HttpResponseRedirect('/materiala/' + str(m_id) + '/?page=' + request.GET['page'])
 			
 			return HttpResponseRedirect('/materiala/' + str(m_id))

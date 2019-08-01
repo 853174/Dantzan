@@ -7,6 +7,7 @@
 
 {% load auth_extras %}
 
+{% if not request.user.is_superuser %}
 <div class="clearfix">
 	<button style="margin-top: 15px;" type="button" class="btn btn-warning float-left" data-toggle="modal" data-target="#mezua" data-whatever="AA">
 	  Arropa arduradunari mezua bidali
@@ -15,15 +16,26 @@
 	  Material arduradunari mezua bidali
 	</button>
 </div>
+{% endif %}
+
+	<script>
+		function rotate(){
+			if($("#arrow").css("transform") == "none"){
+				$("#arrow").css("transform","rotate(180deg)")
+			}else{
+				$("#arrow").css("transform","none")
+			}
+		}
+	</script>
 
 	<div class="card" style="margin-top:15px">
-		<a data-toggle="collapse" href="#bilatzailea" style="text-decoration: none; color:#212529" role="button" aria-expanded="false" aria-controls="collapseExample">
+		<a data-toggle="collapse" href="#bilatzailea" style="text-decoration: none; color:#212529" role="button" aria-expanded="false" aria-controls="collapseExample" onclick="rotate()">
 			<div class="card-header ">
 				{% load static %}
 			 
 			 <div class="clearfix">
 			 	Bilatu armairuetan
-			 	<img src="{% static "arrow-down.png" %}" width="22" height="22" alt=">" class="float-right">
+			 	<img src="{% static "arrow-down.png" %}" width="22" height="22" alt=">" id="arrow" class="float-right" >
 			 </div>
 			</div>
 		</a>
